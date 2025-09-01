@@ -1,5 +1,5 @@
-import { Container, Text, Graphics } from "pixi.js";
-import type { IGame } from "@sharedTypes";
+import { Container, Text, Graphics } from 'pixi.js';
+import type { IGame } from '@sharedTypes';
 
 export class TimeDisplay extends Container {
   private game: IGame;
@@ -14,6 +14,11 @@ export class TimeDisplay extends Container {
 
     this.setupUI();
     this.setupEventListeners();
+
+    this.game.eventService.on('RESIZE', () => {
+      this.resize();
+    });
+    this.resize();
   }
 
   private setupUI(): void {
@@ -32,23 +37,23 @@ export class TimeDisplay extends Container {
 
     this.timeContainer.addChild(this.background);
 
-    this.timeText = new Text("00:00", {
-      fontFamily: "Arial, sans-serif",
+    this.timeText = new Text('00:00', {
+      fontFamily: 'Arial, sans-serif',
       fontSize: 28,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       fill: 0xffffff,
-      align: "center",
+      align: 'center',
     });
     this.timeText.position.set(90, 8);
     this.timeText.anchor.set(0.5, 0);
     this.timeContainer.addChild(this.timeText);
 
-    this.timeOfDayText = new Text("DAY", {
-      fontFamily: "Arial, sans-serif",
+    this.timeOfDayText = new Text('DAY', {
+      fontFamily: 'Arial, sans-serif',
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: 'bold',
       fill: 0xffffff,
-      align: "center",
+      align: 'center',
     });
     this.timeOfDayText.position.set(90, 40);
     this.timeOfDayText.anchor.set(0.5, 0);
@@ -66,15 +71,15 @@ export class TimeDisplay extends Container {
   }
 
   private setupEventListeners(): void {
-    this.game.eventService.on("DAY:TIME_UPDATE", () => {
+    this.game.eventService.on('DAY:TIME_UPDATE', () => {
       this.updateDisplay();
     });
 
-    this.game.eventService.on("DAY:HOUR_CHANGED", () => {
+    this.game.eventService.on('DAY:HOUR_CHANGED', () => {
       this.updateDisplay();
     });
 
-    this.game.eventService.on("DAY:NEXT_DAY", () => {
+    this.game.eventService.on('DAY:NEXT_DAY', () => {
       this.updateDisplay();
     });
   }
@@ -84,28 +89,26 @@ export class TimeDisplay extends Container {
 
     this.timeText.text = dayNightService.getFormattedTime();
 
-    this.timeOfDayText.text = dayNightService
-      .getTimeOfDayString()
-      .toUpperCase();
+    this.timeOfDayText.text = dayNightService.getTimeOfDayString().toUpperCase();
 
     const timeOfDay = dayNightService.getTimeOfDayString().toLowerCase();
     switch (timeOfDay) {
-      case "day":
+      case 'day':
         this.timeOfDayText.style.fill = 0x00ff88;
         break;
-      case "night":
+      case 'night':
         this.timeOfDayText.style.fill = 0x4d9de0;
         break;
-      case "sunrise":
+      case 'sunrise':
         this.timeOfDayText.style.fill = 0xff6b6b;
         break;
-      case "sunset":
+      case 'sunset':
         this.timeOfDayText.style.fill = 0xffa500;
         break;
     }
   }
 
   public resize(): void {
-    this.position.set(window.innerWidth - 100, 25);
+    this.position.set(window.innerWidth - 100, 100);
   }
 }
