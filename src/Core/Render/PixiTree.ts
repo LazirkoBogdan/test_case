@@ -1,12 +1,12 @@
-import * as THREE from 'three';
-import * as PIXI from 'pixi.js';
-import { EventService } from '@core/Service/EventService';
+import * as THREE from "three";
+import * as PIXI from "pixi.js";
+import { EventService } from "@core/Service/EventService";
 
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 
-import type { IRenderPixiTree } from '@sharedTypes';
-import { config } from '@config';
+import type { IRenderPixiTree } from "@sharedTypes";
+import { config } from "@config";
 
 export interface ThreeInitOptions {
   antialias?: boolean;
@@ -42,12 +42,12 @@ export class RenderPixiTree implements IRenderPixiTree {
   }
 
   addResizeListener() {
-    window.addEventListener('resize', () => this.resize());
-    window.addEventListener('orientationchange', () => this.resize);
+    window.addEventListener("resize", () => this.resize());
+    window.addEventListener("orientationchange", () => this.resize);
   }
 
   createCanvas() {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     document.body.appendChild(canvas);
     return canvas;
   }
@@ -58,7 +58,10 @@ export class RenderPixiTree implements IRenderPixiTree {
     this.createCameraDebugUI(); // додано
   }
 
-  async initialiseThree(canvas: HTMLCanvasElement, options: ThreeInitOptions = {}) {
+  async initialiseThree(
+    canvas: HTMLCanvasElement,
+    options: ThreeInitOptions = {},
+  ) {
     const width = WIDTH;
     const height = HEIGHT;
 
@@ -72,7 +75,10 @@ export class RenderPixiTree implements IRenderPixiTree {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.renderer.setSize(width, height);
-    this.renderer.setClearColor(options.clearColor ?? 0x000000, options.clearAlpha ?? 1);
+    this.renderer.setClearColor(
+      options.clearColor ?? 0x000000,
+      options.clearAlpha ?? 1,
+    );
 
     this.scene = new THREE.Scene();
     this.setupCamera(options, width, height);
@@ -81,14 +87,29 @@ export class RenderPixiTree implements IRenderPixiTree {
     this.renderer.setPixelRatio(window.devicePixelRatio);
   }
 
-  private setupCamera(options: ThreeInitOptions, width: number, height: number) {
-    this.camera = new THREE.PerspectiveCamera(options.fov ?? 20, width / height);
+  private setupCamera(
+    options: ThreeInitOptions,
+    width: number,
+    height: number,
+  ) {
+    this.camera = new THREE.PerspectiveCamera(
+      options.fov ?? 20,
+      width / height,
+    );
 
     const cameraConfig = config.camera.base;
 
-    this.camera.position.set(cameraConfig.position.x, cameraConfig.position.y, cameraConfig.position.z);
+    this.camera.position.set(
+      cameraConfig.position.x,
+      cameraConfig.position.y,
+      cameraConfig.position.z,
+    );
 
-    this.camera.rotation.set(cameraConfig.rotation.x, cameraConfig.rotation.y, cameraConfig.rotation.z);
+    this.camera.rotation.set(
+      cameraConfig.rotation.x,
+      cameraConfig.rotation.y,
+      cameraConfig.rotation.z,
+    );
   }
 
   async initiliastionPixi() {
@@ -135,44 +156,47 @@ export class RenderPixiTree implements IRenderPixiTree {
     const screenHeight = window.innerHeight;
     this.pixiRenderer.resize(screenWidth, screenHeight);
     const isLandscape = screenWidth > screenHeight;
-    const orientation = isLandscape ? 'land' : 'port';
+    const orientation = isLandscape ? "land" : "port";
     const baseStage = {
       land: { width: 1920, height: 1080 },
       port: { width: 1080, height: 1920 },
     }[orientation];
-    const scale = Math.min(screenWidth / baseStage.width, screenHeight / baseStage.height);
+    const scale = Math.min(
+      screenWidth / baseStage.width,
+      screenHeight / baseStage.height,
+    );
     const offsetX = (baseStage.width * scale - screenWidth) / 2;
     const offsetY = (baseStage.height * scale - screenHeight) / 2;
     stage.scale.set(scale);
     stage.position.set(-offsetX, -offsetY);
     this.scaleOffest = scale;
-    this.eventService.dispatch('RESIZE', { scale: scale });
+    this.eventService.dispatch("RESIZE", { scale: scale });
   }
 
   private createCameraDebugUI() {
     if (!this.debug) return;
 
-    const debugDiv = document.createElement('div');
-    debugDiv.style.position = 'fixed';
-    debugDiv.style.bottom = '10px';
-    debugDiv.style.right = '10px';
-    debugDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    debugDiv.style.color = '#0f0';
-    debugDiv.style.padding = '8px';
-    debugDiv.style.fontFamily = 'monospace';
-    debugDiv.style.fontSize = '12px';
-    debugDiv.style.zIndex = '9999';
+    const debugDiv = document.createElement("div");
+    debugDiv.style.position = "fixed";
+    debugDiv.style.bottom = "10px";
+    debugDiv.style.right = "10px";
+    debugDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    debugDiv.style.color = "#0f0";
+    debugDiv.style.padding = "8px";
+    debugDiv.style.fontFamily = "monospace";
+    debugDiv.style.fontSize = "12px";
+    debugDiv.style.zIndex = "9999";
     document.body.appendChild(debugDiv);
 
-    const copyButton = document.createElement('button');
-    copyButton.textContent = 'Copy';
-    copyButton.style.marginTop = '5px';
-    copyButton.style.marginLeft = '5px';
-    copyButton.style.fontSize = '10px';
-    copyButton.style.cursor = 'pointer';
+    const copyButton = document.createElement("button");
+    copyButton.textContent = "Copy";
+    copyButton.style.marginTop = "5px";
+    copyButton.style.marginLeft = "5px";
+    copyButton.style.fontSize = "10px";
+    copyButton.style.cursor = "pointer";
     debugDiv.appendChild(copyButton);
 
-    copyButton.addEventListener('click', () => {
+    copyButton.addEventListener("click", () => {
       const pos = this.camera.position;
       const rot = this.camera.rotation;
       const cameraInfo = `

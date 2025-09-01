@@ -1,9 +1,9 @@
-import type { IGame } from '@sharedTypes';
-import * as THREE from 'three';
-import { StaticBuilder } from './Builder/StaticBuilder';
-import { config } from '@config';
-import dat from 'dat.gui';
-import { AssetCache } from '@core/AssetsLoader/AssetsCache';
+import type { IGame } from "@sharedTypes";
+import * as THREE from "three";
+import { StaticBuilder } from "./Builder/StaticBuilder";
+import { config } from "@config";
+import dat from "dat.gui";
+import { AssetCache } from "@core/AssetsLoader/AssetsCache";
 
 export class EnvironmentScene extends THREE.Scene {
   game: IGame;
@@ -61,7 +61,7 @@ export class EnvironmentScene extends THREE.Scene {
     ground_grass.position.x = -1;
     ground_grass.receiveShadow = true;
     ground_grass.castShadow = false;
-    ground_grass.name = 'ground';
+    ground_grass.name = "ground";
     this.add(ground_grass);
     this.ground = ground_grass;
 
@@ -72,7 +72,7 @@ export class EnvironmentScene extends THREE.Scene {
     ground_rock.position.x = -1;
     ground_rock.receiveShadow = true;
     ground_rock.castShadow = false;
-    ground_rock.name = 'rock';
+    ground_rock.name = "rock";
     this.add(ground_rock);
   }
 
@@ -105,12 +105,16 @@ export class EnvironmentScene extends THREE.Scene {
   }
 
   protected getTreePrefabs(): THREE.Object3D[] {
-    const tree = this.game.assetCache.getGLTFGroupByName('ground', 'tree');
-    const tree1 = this.game.assetCache.getGLTFGroupByName('ground', 'tree1');
+    const tree = this.game.assetCache.getGLTFGroupByName("ground", "tree");
+    const tree1 = this.game.assetCache.getGLTFGroupByName("ground", "tree1");
     return [tree, tree1].filter(Boolean) as THREE.Object3D[];
   }
 
-  protected placeTreesFromGridWithRandomTrees(grid: number[][], treePrefabs: THREE.Object3D[], scene: THREE.Scene) {
+  protected placeTreesFromGridWithRandomTrees(
+    grid: number[][],
+    treePrefabs: THREE.Object3D[],
+    scene: THREE.Scene,
+  ) {
     const cellSize = 4;
     const startX = -19;
     const startZ = -18;
@@ -118,7 +122,8 @@ export class EnvironmentScene extends THREE.Scene {
     for (let z = 0; z < grid.length; z++) {
       for (let x = 0; x < grid[z].length; x++) {
         if (grid[z][x] === 1) {
-          const prefab = treePrefabs[Math.floor(Math.random() * treePrefabs.length)];
+          const prefab =
+            treePrefabs[Math.floor(Math.random() * treePrefabs.length)];
           const tree = prefab.clone();
           tree.position.set(startX + x * cellSize, -9.5, startZ + z * cellSize);
           tree.traverse((child: THREE.Object3D) => {
@@ -130,7 +135,11 @@ export class EnvironmentScene extends THREE.Scene {
     }
   }
 
-  protected placeGrassFromGrid(grid: number[][], assetCache: AssetCache, parent: THREE.Scene) {
+  protected placeGrassFromGrid(
+    grid: number[][],
+    assetCache: AssetCache,
+    parent: THREE.Scene,
+  ) {
     const size = 4;
     const offsetX = -((grid[0].length * size) / 2);
     const offsetZ = -((grid.length * size) / 2);
@@ -138,11 +147,18 @@ export class EnvironmentScene extends THREE.Scene {
     for (let row = 0; row < grid.length; row++) {
       for (let col = 0; col < grid[row].length; col++) {
         if (grid[row][col] === 1) {
-          const grassName = config.grassTypes[Math.floor(Math.random() * config.grassTypes.length)];
-          const group = assetCache.getGLTFGroupByName('ground', grassName);
+          const grassName =
+            config.grassTypes[
+              Math.floor(Math.random() * config.grassTypes.length)
+            ];
+          const group = assetCache.getGLTFGroupByName("ground", grassName);
           if (group) {
             const grass = group.clone();
-            grass.position.set(col * size + offsetX, -9.5, row * size + offsetZ);
+            grass.position.set(
+              col * size + offsetX,
+              -9.5,
+              row * size + offsetZ,
+            );
             grass.traverse((child: any) => {
               if (child.isMesh) {
                 child.castShadow = true;
@@ -162,26 +178,26 @@ export class EnvironmentScene extends THREE.Scene {
 
   protected setupLightGUI(dirLight: THREE.DirectionalLight) {
     const gui = new dat.GUI();
-    const lightFolder = gui.addFolder('Directional Light Position');
+    const lightFolder = gui.addFolder("Directional Light Position");
     const lightPosition = {
       x: dirLight.position.x,
       y: dirLight.position.y,
       z: dirLight.position.z,
     };
 
-    lightFolder.add(lightPosition, 'x', -50, 50).onChange((val: number) => {
+    lightFolder.add(lightPosition, "x", -50, 50).onChange((val: number) => {
       dirLight.position.x = val;
     });
-    lightFolder.add(lightPosition, 'y', -50, 50).onChange((val: number) => {
+    lightFolder.add(lightPosition, "y", -50, 50).onChange((val: number) => {
       dirLight.position.y = val;
     });
-    lightFolder.add(lightPosition, 'z', -50, 50).onChange((val: number) => {
+    lightFolder.add(lightPosition, "z", -50, 50).onChange((val: number) => {
       dirLight.position.z = val;
     });
 
     lightFolder.open();
 
-    const dayNightFolder = gui.addFolder('Day/Night Cycle');
+    const dayNightFolder = gui.addFolder("Day/Night Cycle");
     const dayNightControls = {
       timeScale: this.game.dayNightService.getTimeScale(),
       currentTime: this.game.dayNightService.getCurrentTime(),
@@ -190,29 +206,36 @@ export class EnvironmentScene extends THREE.Scene {
     };
 
     dayNightFolder
-      .add(dayNightControls, 'timeScale', 0, 10)
-      .name('Time Speed')
+      .add(dayNightControls, "timeScale", 0, 10)
+      .name("Time Speed")
       .onChange((val: number) => {
         this.game.dayNightService.setTimeScale(val);
         dayNightControls.timeScale = val;
       });
 
     const timeController = dayNightFolder
-      .add(dayNightControls, 'currentTime', 0, 24)
-      .name('Time of Day')
+      .add(dayNightControls, "currentTime", 0, 24)
+      .name("Time of Day")
       .step(0.1)
       .onChange((val: number) => {
         this.game.dayNightService.setTime(val);
         dayNightControls.currentTime = val;
-        dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+        dayNightControls.timeOfDay =
+          this.game.dayNightService.getTimeOfDayString();
         timeOfDayController.updateDisplay();
       });
 
-    const timeOfDayController = dayNightFolder.add(dayNightControls, 'timeOfDay').name('Current Period').listen();
+    const timeOfDayController = dayNightFolder
+      .add(dayNightControls, "timeOfDay")
+      .name("Current Period")
+      .listen();
 
-    const dayNumberController = dayNightFolder.add(dayNightControls, 'dayNumber').name('Day').listen();
+    const dayNumberController = dayNightFolder
+      .add(dayNightControls, "dayNumber")
+      .name("Day")
+      .listen();
 
-    const quickTimeFolder = dayNightFolder.addFolder('Quick Time');
+    const quickTimeFolder = dayNightFolder.addFolder("Quick Time");
 
     quickTimeFolder
       .add(
@@ -221,13 +244,14 @@ export class EnvironmentScene extends THREE.Scene {
             this.game.dayNightService.setTime(6);
             timeController.setValue(6);
             dayNightControls.currentTime = 6;
-            dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+            dayNightControls.timeOfDay =
+              this.game.dayNightService.getTimeOfDayString();
             timeOfDayController.updateDisplay();
           },
         },
-        'jumpTo',
+        "jumpTo",
       )
-      .name('6 AM (Dawn)');
+      .name("6 AM (Dawn)");
 
     quickTimeFolder
       .add(
@@ -236,13 +260,14 @@ export class EnvironmentScene extends THREE.Scene {
             this.game.dayNightService.setTime(12);
             timeController.setValue(12);
             dayNightControls.currentTime = 12;
-            dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+            dayNightControls.timeOfDay =
+              this.game.dayNightService.getTimeOfDayString();
             timeOfDayController.updateDisplay();
           },
         },
-        'jumpTo',
+        "jumpTo",
       )
-      .name('12 PM (Noon)');
+      .name("12 PM (Noon)");
 
     quickTimeFolder
       .add(
@@ -251,13 +276,14 @@ export class EnvironmentScene extends THREE.Scene {
             this.game.dayNightService.setTime(18);
             timeController.setValue(18);
             dayNightControls.currentTime = 18;
-            dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+            dayNightControls.timeOfDay =
+              this.game.dayNightService.getTimeOfDayString();
             timeOfDayController.updateDisplay();
           },
         },
-        'jumpTo',
+        "jumpTo",
       )
-      .name('6 PM (Dusk)');
+      .name("6 PM (Dusk)");
 
     quickTimeFolder
       .add(
@@ -266,20 +292,22 @@ export class EnvironmentScene extends THREE.Scene {
             this.game.dayNightService.setTime(0);
             timeController.setValue(0);
             dayNightControls.currentTime = 0;
-            dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+            dayNightControls.timeOfDay =
+              this.game.dayNightService.getTimeOfDayString();
             timeOfDayController.updateDisplay();
           },
         },
-        'jumpTo',
+        "jumpTo",
       )
-      .name('12 AM (Midnight)');
+      .name("12 AM (Midnight)");
 
     quickTimeFolder.open();
     dayNightFolder.open();
 
     setInterval(() => {
       dayNightControls.currentTime = this.game.dayNightService.getCurrentTime();
-      dayNightControls.timeOfDay = this.game.dayNightService.getTimeOfDayString();
+      dayNightControls.timeOfDay =
+        this.game.dayNightService.getTimeOfDayString();
       dayNightControls.dayNumber = this.game.dayNightService.getDayNumber();
 
       timeController.updateDisplay();
